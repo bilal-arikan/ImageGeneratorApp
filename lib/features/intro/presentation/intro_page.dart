@@ -60,37 +60,50 @@ class IntroPage extends HookConsumerWidget {
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               final item = _items[index];
-              return Column(
+              return Stack(
                 children: [
-                  // Resim Alanı
-                  Expanded(
-                    flex: 3, // Resim alanı için daha fazla alan
-                    child: Container(
-                      width: double.infinity,
-                      child: CachedNetworkImage(
-                        imageUrl: item.imagePath,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Center(
-                          child: CircularProgressIndicator(
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
+                  // Fullscreen resim
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: CachedNetworkImage(
+                      imageUrl: item.imagePath,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Center(
+                        child: CircularProgressIndicator(
+                          color: Theme.of(context).colorScheme.primary,
                         ),
-                        errorWidget: (context, url, error) => const Center(
-                          child: Icon(
-                            Icons.error_outline,
-                            size: 120,
-                            color: Colors.grey,
-                          ),
+                      ),
+                      errorWidget: (context, url, error) => const Center(
+                        child: Icon(
+                          Icons.error_outline,
+                          size: 120,
+                          color: Colors.grey,
                         ),
                       ),
                     ),
                   ),
-                  // Metin ve Buton Alanı
-                  Expanded(
-                    flex: 2, // Alt kısım için daha az alan
-                    child: SizedBox(
-                      width: double.infinity,
+                  // İçerik alanı - alt kısımda
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withOpacity(0.7),
+                            Colors.black.withOpacity(0.9),
+                          ],
+                        ),
+                      ),
                       child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Padding(
                             padding: const EdgeInsets.all(24),
@@ -121,7 +134,6 @@ class IntroPage extends HookConsumerWidget {
                               ],
                             ),
                           ),
-                          const Spacer(),
                           // Page indicators
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
