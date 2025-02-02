@@ -16,11 +16,12 @@ class LoginPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Giriş Yap')),
-      body: SingleChildScrollView(
-        child: Padding(
+      body: Center(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextField(
                 controller: emailController,
@@ -53,7 +54,12 @@ class LoginPage extends HookConsumerWidget {
                   },
                   child: const Text('Giriş Yap'),
                 ),
-                loading: () => const CircularProgressIndicator(),
+                loading: () => const SizedBox(
+                  height: 48, // ElevatedButton ile aynı yükseklik
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
                 error: (error, _) {
                   errorText.value = error.toString();
                   return ElevatedButton(
@@ -66,11 +72,11 @@ class LoginPage extends HookConsumerWidget {
                 },
               ),
               TextButton(
-                onPressed: () => context.go('/register'),
+                onPressed: () => context.push('/register'),
                 child: const Text('Hesabın yok mu? Kayıt ol'),
               ),
               TextButton(
-                onPressed: () => context.go('/reset-password'),
+                onPressed: () => context.push('/reset-password'),
                 child: const Text('Şifreni mi unuttun?'),
               ),
             ],

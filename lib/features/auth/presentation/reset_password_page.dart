@@ -16,11 +16,12 @@ class ResetPasswordPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Şifre Sıfırlama')),
-      body: SingleChildScrollView(
-        child: Padding(
+      body: Center(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Text(
                 'E-posta adresinizi girin. Size şifre sıfırlama bağlantısı göndereceğiz.',
@@ -39,39 +40,48 @@ class ResetPasswordPage extends HookConsumerWidget {
                 onChanged: (_) => errorText.value = null,
               ),
               const SizedBox(height: 24),
-              authState.when(
-                data: (_) => ElevatedButton(
-                  onPressed: () async {
-                    try {
-                      await ref.read(authServiceProvider).resetPassword(
-                            emailController.text,
-                          );
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content:
-                                Text('Şifre sıfırlama bağlantısı gönderildi'),
-                          ),
-                        );
-                        context.go('/login');
-                      }
-                    } catch (e) {
-                      errorText.value = e.toString();
-                    }
-                  },
-                  child: const Text('Şifre Sıfırlama Bağlantısı Gönder'),
-                ),
-                loading: () => const CircularProgressIndicator(),
-                error: (error, _) {
-                  errorText.value = error.toString();
-                  return ElevatedButton(
-                    onPressed: () =>
-                        ref.read(authServiceProvider).resetPassword(
-                              emailController.text,
-                            ),
-                    child: const Text('Tekrar Dene'),
-                  );
-                },
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () => context.pop(),
+                    child: const Text('Giriş sayfasına dön'),
+                  ),
+                  authState.when(
+                    data: (_) => ElevatedButton(
+                      onPressed: () async {
+                        try {
+                          await ref.read(authServiceProvider).resetPassword(
+                                emailController.text,
+                              );
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    'Şifre sıfırlama bağlantısı gönderildi'),
+                              ),
+                            );
+                            context.go('/login');
+                          }
+                        } catch (e) {
+                          errorText.value = e.toString();
+                        }
+                      },
+                      child: const Text('Şifre Sıfırlama Bağlantısı Gönder'),
+                    ),
+                    loading: () => const CircularProgressIndicator(),
+                    error: (error, _) {
+                      errorText.value = error.toString();
+                      return ElevatedButton(
+                        onPressed: () =>
+                            ref.read(authServiceProvider).resetPassword(
+                                  emailController.text,
+                                ),
+                        child: const Text('Tekrar Dene'),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),

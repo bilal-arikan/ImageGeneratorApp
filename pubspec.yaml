@@ -45,7 +45,7 @@ dependencies:
   
   # UI Components
   flutter_hooks: ^0.20.3
-  cached_network_image: ^3.3.0
+  cached_network_image: ^3.3.1
   shimmer: ^3.0.0
   
   # Backend & Storage

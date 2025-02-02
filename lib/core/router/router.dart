@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../providers/auth_provider.dart';
 import '../../features/auth/presentation/login_page.dart';
 import '../../features/auth/presentation/register_page.dart';
 import '../../features/auth/presentation/reset_password_page.dart';
@@ -9,20 +10,33 @@ import '../../features/home/presentation/discover_page.dart';
 import '../../features/home/presentation/generate_page.dart';
 import '../../features/home/presentation/my_generations_page.dart';
 import '../../features/home/presentation/profile_page.dart';
-import '../providers/auth_provider.dart';
+import '../../features/intro/presentation/intro_page.dart';
 
 part 'router.g.dart';
 
 @Riverpod(keepAlive: true)
 GoRouter router(RouterRef ref) {
   final authState = ref.watch(authProvider);
+  final hasSeenIntro = ref.watch(hasSeenIntroProvider);
 
   return GoRouter(
-    initialLocation: '/login',
+    initialLocation: '/intro',
     redirect: (context, state) {
-      if (authState.isLoading) return null;
+      if (!hasSeenIntro && state.matchedLocation != '/intro') {
+        return '/intro';
+      }
 
-      if (authState.hasError) return '/login';
+      if (hasSeenIntro && state.matchedLocation == '/intro') {
+        return '/login';
+      }
+
+      if (authState.isLoading || state.matchedLocation == '/intro') {
+        return null;
+      }
+
+      if (authState.hasError) {
+        return '/login';
+      }
 
       final authData = authState.valueOrNull;
       if (authData == null) return null;
@@ -36,17 +50,21 @@ GoRouter router(RouterRef ref) {
           state.matchedLocation == '/register' ||
           state.matchedLocation == '/reset-password';
 
-      if (!isAuthenticated && !isAuthRoute) {
-        return '/login';
-      }
-
       if (isAuthenticated && isAuthRoute) {
         return '/home';
+      }
+
+      if (!isAuthenticated && !isAuthRoute) {
+        return '/login';
       }
 
       return null;
     },
     routes: [
+      GoRoute(
+        path: '/intro',
+        builder: (context, state) => const IntroPage(),
+      ),
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginPage(),
@@ -86,4 +104,12 @@ GoRouter router(RouterRef ref) {
       ),
     ],
   );
+}
+
+@riverpod
+class HasSeenIntro extends _$HasSeenIntro {
+  @override
+  bool build() => false;
+
+  void markAsSeen() => state = true;
 }

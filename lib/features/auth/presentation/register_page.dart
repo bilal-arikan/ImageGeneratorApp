@@ -17,11 +17,12 @@ class RegisterPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Kayıt Ol')),
-      body: SingleChildScrollView(
-        child: Padding(
+      body: Center(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextField(
                 controller: emailController,
@@ -83,7 +84,7 @@ class RegisterPage extends HookConsumerWidget {
                 },
               ),
               TextButton(
-                onPressed: () => context.go('/login'),
+                onPressed: () => context.pop(),
                 child: const Text('Zaten hesabın var mı? Giriş yap'),
               ),
             ],
