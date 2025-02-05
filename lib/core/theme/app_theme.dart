@@ -84,8 +84,8 @@ class AppTheme {
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: Colors.white,
       indicatorColor: _primaryColor.withOpacity(0.2),
-      labelTextStyle: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return const TextStyle(color: _primaryColor);
         }
         return const TextStyle(color: Colors.grey);
@@ -149,8 +149,8 @@ class AppTheme {
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: Colors.grey[900],
       indicatorColor: _primaryColor.withOpacity(0.2),
-      labelTextStyle: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return const TextStyle(color: _primaryColor);
         }
         return const TextStyle(color: Colors.grey);

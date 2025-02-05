@@ -6,6 +6,18 @@ class DiscoverPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const DummyPage(title: 'Keşfet');
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF6A11CB),
+            Color(0xFF2575FC),
+          ],
+        ),
+      ),
+      child: const DummyPage(title: 'Keşfet'),
+    );
   }
 }

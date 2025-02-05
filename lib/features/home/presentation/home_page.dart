@@ -17,6 +17,8 @@ class HomePage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: const Text('AI Image Generator'),
         leading: Navigator.canPop(context)
             ? IconButton(
