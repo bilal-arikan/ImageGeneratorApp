@@ -58,6 +58,7 @@ dependencies:
   
   # In-App Purchase
   # in_app_purchase: ^3.1.11  # Bu satırı yorum satırı haline getirin
+  image_picker: ^1.0.7
 
 dev_dependencies:
   flutter_test:

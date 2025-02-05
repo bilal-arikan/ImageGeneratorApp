@@ -44,20 +44,33 @@ class Auth extends _$Auth {
   Future<void> signUp(String email, String password, String phone) async {
     try {
       final response = await ref.read(supabaseProvider).auth.signUp(
-        email: email,
-        password: password,
-        data: {'phone': phone},
-      );
+            email: email,
+            password: password,
+            data: {'phone': phone},
+            emailRedirectTo: 'io.supabase.flutterquickstart://login-callback/',
+          );
 
       if (response.user == null) {
         throw 'Kayıt işlemi başarısız oldu';
       }
 
-      if (response.user?.emailConfirmedAt != null) {
-        throw 'Lütfen e-posta adresinizi doğrulayın';
+      if (response.user?.emailConfirmedAt == null) {
+        throw 'Lütfen e-posta adresinize gönderilen doğrulama bağlantısına tıklayın';
       }
     } catch (e) {
-      throw _handleAuthError(e);
+      if (e is AuthException) {
+        switch (e.message) {
+          case 'Password should be at least 6 characters':
+            throw 'Şifre en az 6 karakter olmalıdır';
+          case 'User already registered':
+            throw 'Bu e-posta adresi zaten kayıtlı';
+          case 'Invalid email':
+            throw 'Geçersiz e-posta adresi';
+          default:
+            throw e.message;
+        }
+      }
+      throw e.toString();
     }
   }
 

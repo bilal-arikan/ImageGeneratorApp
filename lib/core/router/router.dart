@@ -1,3 +1,4 @@
+import 'package:ai_image_generator/features/profile/presentation/profile_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../providers/auth_provider.dart';
@@ -8,7 +9,6 @@ import '../../features/home/presentation/home_page.dart';
 import '../../features/home/presentation/discover_page.dart';
 import '../../features/home/presentation/generate_page.dart';
 import '../../features/home/presentation/my_generations_page.dart';
-import '../../features/home/presentation/profile_page.dart';
 import '../../features/intro/presentation/intro_page.dart';
 
 part 'router.g.dart';
