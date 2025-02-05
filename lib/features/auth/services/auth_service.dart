@@ -1,6 +1,6 @@
+import 'package:ai_image_generator/features/auth/models/user.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../models/auth_state.dart';
-import '../models/fake_user.dart';
 
 part 'auth_service.g.dart';
 
@@ -8,7 +8,7 @@ part 'auth_service.g.dart';
 AuthService authService(AuthServiceRef ref) => AuthService();
 
 class AuthService {
-  FakeUser? _currentUser;
+  User? _currentUser;
   bool _isAuthenticated = false;
 
   Future<void> signUp({
@@ -18,7 +18,7 @@ class AuthService {
   }) async {
     await Future.delayed(const Duration(seconds: 1));
 
-    _currentUser = FakeUser(
+    _currentUser = User(
       id: 'fake-user-id',
       email: email,
       phone: phone,
@@ -34,7 +34,7 @@ class AuthService {
     await Future.delayed(const Duration(seconds: 1));
 
     if (email == 'test@test.com' && password == '123456') {
-      _currentUser = FakeUser(
+      _currentUser = User(
         id: 'fake-user-id',
         email: email,
         phone: '+905555555555',

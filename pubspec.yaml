@@ -49,7 +49,7 @@ dependencies:
   shimmer: ^3.0.0
   
   # Backend & Storage
-  supabase_flutter: ^2.0.2
+  supabase_flutter: ^2.3.4
   
   # Utils
   logger: ^2.0.2

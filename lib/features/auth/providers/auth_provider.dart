@@ -1,7 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide User, AuthState;
 import '../models/auth_state.dart';
-import '../models/fake_user.dart';
-import '../services/auth_service.dart';
+import '../models/user.dart';
+import '../../../core/providers/supabase_provider.dart';
 
 part 'auth_provider.g.dart';
 
@@ -9,53 +10,88 @@ part 'auth_provider.g.dart';
 class Auth extends _$Auth {
   @override
   Stream<AuthState> build() {
-    return ref.watch(authServiceProvider).authStateChanges();
+    return ref.watch(supabaseProvider).auth.onAuthStateChange.map((event) {
+      final session = event.session;
+      final user =
+          event.event == AuthChangeEvent.signedIn ? session?.user : null;
+
+      if (user == null) {
+        return const AuthState.unauthenticated();
+      }
+
+      return AuthState.authenticated(
+        User(
+          id: user.id,
+          email: user.email ?? '',
+          phone: user.phone,
+          createdAt: user.createdAt,
+        ),
+      );
+    });
   }
 
   Future<void> signIn(String email, String password) async {
-    state = const AsyncValue.loading();
     try {
-      await ref.read(authServiceProvider).signIn(
+      await ref.read(supabaseProvider).auth.signInWithPassword(
             email: email,
             password: password,
           );
-      state = AsyncValue.data(AuthState.authenticated(FakeUser(
-        id: 'fake-user-id',
-        email: email,
-        phone: '+905555555555',
-        createdAt: DateTime.now().toString(),
-      )));
     } catch (e) {
-      state = AsyncValue.error(e, StackTrace.current);
+      throw _handleAuthError(e);
     }
   }
 
   Future<void> signUp(String email, String password, String phone) async {
-    state = const AsyncValue.loading();
     try {
-      await ref.read(authServiceProvider).signUp(
-            email: email,
-            password: password,
-            phone: phone,
-          );
-      state = AsyncValue.data(AuthState.authenticated(FakeUser(
-        id: 'fake-user-id',
+      final response = await ref.read(supabaseProvider).auth.signUp(
         email: email,
-        phone: phone,
-        createdAt: DateTime.now().toString(),
-      )));
+        password: password,
+        data: {'phone': phone},
+      );
+
+      if (response.user == null) {
+        throw 'Kayıt işlemi başarısız oldu';
+      }
+
+      if (response.user?.emailConfirmedAt != null) {
+        throw 'Lütfen e-posta adresinizi doğrulayın';
+      }
     } catch (e) {
-      state = AsyncValue.error(e, StackTrace.current);
+      throw _handleAuthError(e);
     }
   }
 
   Future<void> signOut() async {
-    state = const AsyncValue.loading();
     try {
-      await ref.read(authServiceProvider).signOut();
-      state = const AsyncValue.data(AuthState.unauthenticated());
+      await ref.read(supabaseProvider).auth.signOut();
     } catch (e) {
-      state = AsyncValue.error(e, StackTrace.current);
+      throw _handleAuthError(e);
     }
+  }
+
+  Future<void> resetPassword(String email) async {
+    try {
+      await ref.read(supabaseProvider).auth.resetPasswordForEmail(email);
+    } catch (e) {
+      throw _handleAuthError(e);
+    }
+  }
+
+  String _handleAuthError(dynamic error) {
+    if (error is AuthException) {
+      switch (error.message) {
+        case 'Invalid login credentials':
+          return 'E-posta veya şifre hatalı';
+        case 'Email not confirmed':
+          return 'Lütfen e-posta adresinizi doğrulayın';
+        case 'User already registered':
+          return 'Bu e-posta adresi zaten kayıtlı';
+        case 'Password should be at least 6 characters':
+          return 'Şifre en az 6 karakter olmalıdır';
+        default:
+          return error.message;
+      }
+    }
+    return error.toString();
   }
 }

@@ -4,14 +4,15 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/auth_provider.dart';
 import '../../../core/widgets/gradient_background.dart';
+import '../../../core/theme/auth_theme.dart';
 
 class LoginPage extends HookConsumerWidget {
   const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final emailController = useTextEditingController(text: 'test@test.com');
-    final passwordController = useTextEditingController(text: '123456');
+    final emailController = useTextEditingController(text: "t@t.com");
+    final passwordController = useTextEditingController(text: "111111");
     final authState = ref.watch(authProvider);
     final errorText = useState<String?>(null);
 
@@ -26,16 +27,16 @@ class LoginPage extends HookConsumerWidget {
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
+              padding: AuthTheme.cardPadding,
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   TextField(
                     controller: emailController,
-                    decoration: InputDecoration(
+                    decoration: AuthTheme.inputDecoration(
+                      context,
                       labelText: 'E-posta',
-                      border: const OutlineInputBorder(),
                       errorText: errorText.value,
                     ),
                     keyboardType: TextInputType.emailAddress,
@@ -44,9 +45,9 @@ class LoginPage extends HookConsumerWidget {
                   const SizedBox(height: 16),
                   TextField(
                     controller: passwordController,
-                    decoration: const InputDecoration(
+                    decoration: AuthTheme.inputDecoration(
+                      context,
                       labelText: 'Şifre',
-                      border: OutlineInputBorder(),
                     ),
                     obscureText: true,
                     onChanged: (_) => errorText.value = null,
@@ -55,19 +56,20 @@ class LoginPage extends HookConsumerWidget {
                   authState.when(
                     data: (_) => ElevatedButton(
                       onPressed: () async {
-                        await ref.read(authProvider.notifier).signIn(
-                              emailController.text,
-                              passwordController.text,
-                            );
+                        try {
+                          await ref.read(authProvider.notifier).signIn(
+                                emailController.text,
+                                passwordController.text,
+                              );
+                        } catch (e) {
+                          errorText.value = e.toString();
+                        }
                       },
+                      style: AuthTheme.elevatedButtonStyle(context),
                       child: const Text('Giriş Yap'),
                     ),
-                    loading: () => const SizedBox(
-                      height: 48, // ElevatedButton ile aynı yükseklik
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    ),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
                     error: (error, _) {
                       errorText.value = error.toString();
                       return ElevatedButton(
@@ -75,15 +77,18 @@ class LoginPage extends HookConsumerWidget {
                               emailController.text,
                               passwordController.text,
                             ),
+                        style: AuthTheme.elevatedButtonStyle(context),
                         child: const Text('Tekrar Dene'),
                       );
                     },
                   ),
                   TextButton(
+                    style: AuthTheme.textButtonStyle(),
                     onPressed: () => context.push('/register'),
                     child: const Text('Hesabın yok mu? Kayıt ol'),
                   ),
                   TextButton(
+                    style: AuthTheme.textButtonStyle(),
                     onPressed: () => context.push('/reset-password'),
                     child: const Text('Şifreni mi unuttun?'),
                   ),
