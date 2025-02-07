@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/profile.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../credits/services/credits_service.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -65,18 +66,7 @@ class ProfilePage extends ConsumerWidget {
                     title: const Text('E-posta'),
                     subtitle: Text(user.email),
                   ),
-                  ListTile(
-                    title: const Text('Krediler'),
-                    subtitle: Text('${profile.credits} kredi'),
-                    trailing: SizedBox(
-                      width: 100,
-                      child: TextButton(
-                        onPressed: () =>
-                            _showBuyCreditsDialog(context, ref, profile),
-                        child: const Text('Kredi Al'),
-                      ),
-                    ),
-                  ),
+                  _buildCreditsSection(context, ref, user.id),
                 ],
               ),
             ),
@@ -88,6 +78,33 @@ class ProfilePage extends ConsumerWidget {
       ),
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => Center(child: Text('Hata: $error')),
+    );
+  }
+
+  Widget _buildCreditsSection(
+      BuildContext context, WidgetRef ref, String userId) {
+    final credits = ref.watch(creditsServiceProvider(userId));
+
+    return credits.when(
+      data: (credits) => ListTile(
+        title: const Text('Krediler'),
+        subtitle: Text('${credits.amount} kredi'),
+        trailing: SizedBox(
+          width: 100,
+          child: TextButton(
+            onPressed: () => _showBuyCreditsDialog(context, ref, userId),
+            child: const Text('Kredi Al'),
+          ),
+        ),
+      ),
+      loading: () => const ListTile(
+        title: Text('Krediler'),
+        subtitle: CircularProgressIndicator(),
+      ),
+      error: (error, _) => ListTile(
+        title: const Text('Krediler'),
+        subtitle: Text('Hata: $error'),
+      ),
     );
   }
 
@@ -199,7 +216,7 @@ class ProfilePage extends ConsumerWidget {
   Future<void> _showBuyCreditsDialog(
     BuildContext context,
     WidgetRef ref,
-    Profile profile,
+    String userId,
   ) async {
     final packages = [
       (amount: 10, price: '10₺'),
@@ -221,13 +238,9 @@ class ProfilePage extends ConsumerWidget {
                 trailing: ElevatedButton(
                   onPressed: () async {
                     try {
-                      // Burada ödeme işlemi yapılacak
                       await ref
-                          .read(profileServiceProvider(profile.id).notifier)
-                          .updateCredits(
-                            profile.id,
-                            profile.credits + package.amount,
-                          );
+                          .read(creditsServiceProvider(userId).notifier)
+                          .addCredits(userId, package.amount);
                       if (context.mounted) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(

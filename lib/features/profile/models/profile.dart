@@ -9,11 +9,8 @@ class Profile with _$Profile {
     required String id,
     required String username,
     String? avatarUrl,
-    @Default(10) int credits,
   }) = _Profile;
 
-  factory Profile.fromJson(Map<String, dynamic> json) => _$ProfileFromJson({
-        ...json,
-        'updated_at': json['updated_at'] ?? DateTime.now().toIso8601String(),
-      });
+  factory Profile.fromJson(Map<String, dynamic> json) =>
+      _$ProfileFromJson(json);
 }
