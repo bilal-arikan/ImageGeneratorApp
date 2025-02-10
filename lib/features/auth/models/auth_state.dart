@@ -1,4 +1,4 @@
-import 'package:ai_image_generator/features/auth/models/user.dart';
+import 'package:ai_image_generator/features/auth/domain/user.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'auth_state.freezed.dart';
