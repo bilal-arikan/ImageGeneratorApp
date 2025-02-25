@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import '../../../discover/presentation/pages/discover_page.dart';
-import '../../../generation/presentation/pages/generate_page.dart';
-import '../../../profile/presentation/pages/profile_page.dart';
-import '../widgets/bottom_nav_bar.dart';
+import 'package:image_generator_app/features/discover/presentation/pages/discover_page.dart';
+import 'package:image_generator_app/features/generate/presentation/pages/generate_page.dart';
+import 'package:image_generator_app/features/my_generations/presentation/pages/my_generations_page.dart';
+import 'package:image_generator_app/features/profile/presentation/pages/profile_page.dart';
+import 'package:image_generator_app/features/search/presentation/pages/search_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -13,28 +14,49 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  int _currentIndex = 2;
+  int _selectedIndex = 0;
 
-  final _pages = const [
+  final List<Widget> _pages = const [
     DiscoverPage(),
+    SearchPage(),
     GeneratePage(),
+    MyGenerationsPage(),
     ProfilePage(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (index) {
           setState(() {
-            _currentIndex = index;
+            _selectedIndex = index;
           });
         },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.explore),
+            label: 'Discover',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.search),
+            label: 'Search',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.add_box),
+            label: 'Generate',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.image),
+            label: 'My Images',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
       ),
     );
   }
