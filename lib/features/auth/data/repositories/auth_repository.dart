@@ -1,4 +1,5 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:image_generator_app/core/constants/api_endpoints.dart';
 import 'package:image_generator_app/core/services/http_service.dart';
 import 'package:image_generator_app/features/auth/domain/models/auth_state.dart';
 
@@ -18,7 +19,7 @@ class AuthRepository {
   }) async {
     try {
       final response = await _httpService.post(
-        '/auth/signin',
+        ApiEndpoints.auth.signIn,
         body: {
           'identifier': email,
           'password': password,
@@ -39,7 +40,7 @@ class AuthRepository {
   }) async {
     try {
       final response = await _httpService.post(
-        '/auth/signup',
+        ApiEndpoints.auth.signUp,
         body: {
           'email': email,
           'password': password,
@@ -48,7 +49,7 @@ class AuthRepository {
       );
 
       print(response);
-      return UserModel.fromJson(response);
+      return UserModel.fromJson(response['user'] as Map<String, dynamic>);
     } catch (e) {
       throw Exception('Kayıt olurken bir hata oluştu: $e');
     }
@@ -57,7 +58,7 @@ class AuthRepository {
   Future<void> forgotPassword({required String email}) async {
     try {
       await _httpService.post(
-        '/auth/forgot-password',
+        ApiEndpoints.auth.forgotPassword,
         body: {'email': email},
       );
     } catch (e) {
@@ -67,7 +68,7 @@ class AuthRepository {
 
   Future<void> signOut() async {
     try {
-      await _httpService.post('/auth/signout');
+      await _httpService.post(ApiEndpoints.auth.signOut);
     } catch (e) {
       throw Exception('Çıkış yapılırken bir hata oluştu: $e');
     }

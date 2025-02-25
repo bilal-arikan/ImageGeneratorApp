@@ -35,6 +35,7 @@ class HttpService {
         headers: headers,
       );
 
+      print(response.body);
       return _handleResponse(response);
     } catch (e) {
       throw HttpException(
@@ -53,14 +54,53 @@ class HttpService {
         body: body != null ? json.encode(body) : null,
       );
 
+      print(response.body);
       final data = _handleResponse(response);
 
       // Auth token'ı kaydet
-      if (path.contains('/auth/') && data != null && data['token'] != null) {
-        await _saveToken(data['token']);
+      if (path.contains('/auth/') && data != null) {
+        final session = data['session'];
+        if (session != null && session['access_token'] != null) {
+          await _saveToken(session['access_token']);
+        }
       }
 
       return data;
+    } catch (e) {
+      throw HttpException(
+        500,
+        message: 'Bir ağ hatası oluştu: $e',
+      );
+    }
+  }
+
+  Future<dynamic> put(String path, {Map<String, dynamic>? body}) async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.put(
+        Uri.parse('$_baseUrl$path'),
+        headers: headers,
+        body: body != null ? json.encode(body) : null,
+      );
+
+      return _handleResponse(response);
+    } catch (e) {
+      throw HttpException(
+        500,
+        message: 'Bir ağ hatası oluştu: $e',
+      );
+    }
+  }
+
+  Future<dynamic> delete(String path) async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.delete(
+        Uri.parse('$_baseUrl$path'),
+        headers: headers,
+      );
+
+      return _handleResponse(response);
     } catch (e) {
       throw HttpException(
         500,

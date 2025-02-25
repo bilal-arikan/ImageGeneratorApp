@@ -40,7 +40,7 @@ class ImageGrid extends StatelessWidget {
                 fit: StackFit.expand,
                 children: [
                   CachedNetworkImage(
-                    imageUrl: image.imageUrl,
+                    imageUrl: image.outputs['main'] ?? image.outputs['image'],
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Container(
                       color: Colors.grey[200],
@@ -69,14 +69,32 @@ class ImageGrid extends StatelessWidget {
                           ],
                         ),
                       ),
-                      child: Text(
-                        image.prompt,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (image.user != null)
+                            Text(
+                              image.user!.fullName,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          const SizedBox(height: 4),
+                          Text(
+                            image.promptValues['prompt'] ??
+                                image.promptValues['6.inputs.text'] ??
+                                'Untitled',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

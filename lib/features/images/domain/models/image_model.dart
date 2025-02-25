@@ -7,16 +7,20 @@ part 'image_model.g.dart';
 class ImageModel with _$ImageModel {
   const factory ImageModel({
     required String id,
-    required String userId,
-    required String prompt,
-    String? negativePrompt,
-    required String imageUrl,
-    required String style,
-    required int width,
-    required int height,
-    @Default(false) bool isPublic,
+    @JsonKey(name: 'user_id') required String userId,
+    required String generator,
+    required String workflow,
+    @JsonKey(name: 'prompt_values') required Map<String, dynamic> promptValues,
+    required Map<String, dynamic> outputs,
+    required String status,
+    String? error,
+    @JsonKey(name: 'worker_id') String? workerId,
+    required int attempts,
+    @JsonKey(name: 'last_attempt') DateTime? lastAttempt,
     @JsonKey(name: 'created_at') required DateTime createdAt,
     @JsonKey(name: 'updated_at') DateTime? updatedAt,
+    @JsonKey(name: 'is_deleted') @Default(false) bool isDeleted,
+    UserInfo? user,
   }) = _ImageModel;
 
   factory ImageModel.fromJson(Map<String, dynamic> json) =>
@@ -35,4 +39,16 @@ class ImageStyle with _$ImageStyle {
 
   factory ImageStyle.fromJson(Map<String, dynamic> json) =>
       _$ImageStyleFromJson(json);
+}
+
+@freezed
+class UserInfo with _$UserInfo {
+  const factory UserInfo({
+    required String id,
+    @JsonKey(name: 'full_name') required String fullName,
+    @JsonKey(name: 'avatar_url') String? avatarUrl,
+  }) = _UserInfo;
+
+  factory UserInfo.fromJson(Map<String, dynamic> json) =>
+      _$UserInfoFromJson(json);
 }
