@@ -8,7 +8,8 @@ final httpServiceProvider = Provider<HttpService>((ref) {
 });
 
 class HttpService {
-  static const String _baseUrl = 'http://192.168.1.12:54321/functions/v1';
+  static const String _baseUrl = 'http://192.168.1.37:54321/functions/v1';
+  static const String _baseStorageUrl = 'http://192.168.1.37:54321/storage/v1';
   final _storage = const FlutterSecureStorage();
 
   Future<Map<String, String>> _getHeaders() async {
@@ -83,6 +84,7 @@ class HttpService {
         body: body != null ? json.encode(body) : null,
       );
 
+      print(response.body);
       return _handleResponse(response);
     } catch (e) {
       throw HttpException(
@@ -100,6 +102,7 @@ class HttpService {
         headers: headers,
       );
 
+      print(response.body);
       return _handleResponse(response);
     } catch (e) {
       throw HttpException(
@@ -110,7 +113,11 @@ class HttpService {
   }
 
   dynamic _handleResponse(http.Response response) {
-    final body = response.body.isNotEmpty ? json.decode(response.body) : null;
+    var body = response.body.isNotEmpty ? json.decode(response.body) : null;
+
+    // TODO: Remove this after testing
+    body = json.decode(json.encode(body).replaceAll(
+        'http://kong:8000/storage/v1', HttpService._baseStorageUrl));
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return body;
